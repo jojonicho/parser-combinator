@@ -6,20 +6,20 @@ Saya ingin memberi outline hal-hal yang penting yang telah saya pelajari.
    Berikut adalah penggunaan newtype pada parser combinator
 
 ```
-newtype Parser a = Parser { parse :: String -> Maybe (String, a)}
+newtype Parser a = Parser {parse :: String -> Maybe (a, String)}
 ```
 
 newtype ini hanya memiliki 1 konstruktor
-Cara membacanya adalah saya membuat type bernama Parser. Namun kenapa ada fungsi parse di dalamnya? Ini cara bacanya adalah untuk meng unwrap parser, makanya memiliki return value Maybe (String, a)
+Cara membacanya adalah saya membuat type bernama Parser. Namun kenapa ada fungsi parse di dalamnya? Ini cara bacanya adalah untuk meng unwrap parser, makanya memiliki return value Maybe (a, String)
 
 ```
 *Main Control.Applicative> :t parse
-parse :: Parser a -> String -> Maybe (String, a)
+parse :: Parser a -> String -> Maybe (a, String)
 *Main Control.Applicative> :t Parser
-Parser :: (String -> Maybe (String, a)) -> Parser a
+Parser :: (String -> Maybe (a, String)) -> Parser a
 ```
 
-Sebalknya, tipe parser ini menerima fungsi dengan tipe String -> Maybe (String, a) dan mengembalikan sesuatu bertipe Parser.
+Sebalknya, tipe parser ini menerima fungsi dengan tipe String -> Maybe (a, String) dan mengembalikan sesuatu bertipe Parser.
 
 2. <$> Functor
 
@@ -57,7 +57,7 @@ instance Functor Parser where
     Just (input', f x)
 ```
 
-Seperti yang sudah didefine pada newtype, Parser menerima fungsi String -> Maybe(String, a). f disini sebenarnya sedikit membingungkan, karena sebenarnya f ini berupa tipe, seperti list atau nanti yang akan diimplemen yaitu JsonValue. Fmap ini dapat dilihat sebagai perlakuan fungsi <$> terhadap elemen-elemen dalam suatu tipe.
+Seperti yang sudah didefine pada newtype, Parser menerima fungsi String -> Maybe(a, String). f disini sebenarnya sedikit membingungkan, karena sebenarnya f ini berupa tipe, seperti list atau nanti yang akan diimplemen yaitu JsonValue. Fmap ini dapat dilihat sebagai perlakuan fungsi <$> terhadap elemen-elemen dalam suatu tipe.
 
 Keren, Parser kita sudah merupakan sebuah Functor, lalu apa yang bisa dilakukan?
 Pertama-tama, kita buat dahulu `charParser`, yaitu parser untuk char
