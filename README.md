@@ -53,8 +53,8 @@ Untuk membuat Parser menjadi instance dari Functor, minimal dibutuhkan fungsi `f
 ```
 instance Functor Parser where
   fmap f (Parser p) = Parser $ \inp -> do
-    (input', x) <- p inp
-    Just (input', f x)
+    (x, input') <- p inp
+    Just (f x, input')
 ```
 
 Seperti yang sudah didefine pada newtype, Parser menerima fungsi String -> Maybe(a, String). f disini sebenarnya sedikit membingungkan, karena sebenarnya f ini berupa tipe, seperti list atau nanti yang akan diimplemen yaitu JsonValue. Fmap ini dapat dilihat sebagai perlakuan fungsi <$> terhadap elemen-elemen dalam suatu tipe.
@@ -67,7 +67,7 @@ charParser :: Char -> Parser Char
 charParser c = Parser f
   where
     f (x : xs)
-      | c == x = Just (xs, c)
+      | c == x = Just (c, xs)
       | otherwise = Nothing
     f [] = Nothing
 
@@ -134,14 +134,14 @@ Berikut adalah definisi fungsi pure dan <\*> Parser.
 
 ```
 instance Applicative Parser where
-  pure x = Parser $ \inp -> Just (inp, x)
+  pure x = Parser $ \inp -> Just (x, inp)
 
   -- take the input, put it through the first parser, then the second
   (Parser p1) <*> (Parser p2) = Parser $ \inp -> do
     -- currying
-    (inp1, f) <- p1 inp
-    (inp2, a) <- p2 inp1
-    Just (inp2, f a)
+    (f, inp') <- p1 inp
+    (a, inp'') <- p2 inp'
+    Just (f a, inp'')
 ```
 
 Dapat dilihat juga bahwa <\*> memasukkan input pada parser pertama, lalu parser ke dua, seperti yang saya jelaskan di atas dimana ini menggunakan konsep `currying`.
