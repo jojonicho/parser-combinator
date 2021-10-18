@@ -49,11 +49,6 @@ jsonBool = f <$> (stringParser "true" <|> stringParser "false")
       | inp == "true" = JsonBool True
       | inp == "false" = JsonBool False
 
--- where
---   f "true" = JsonBool True
---   f "false" = JsonBool False
---   f _       = undefined
-
 -- JSON NUM
 
 notNull :: Foldable t => Parser (t a) -> Parser (t a)
